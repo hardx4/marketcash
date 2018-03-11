@@ -56,7 +56,7 @@ namespace parameters {
 
 #define DIFFICULTY_TARGET                               90
 #define EXPECTED_NUMBER_OF_BLOCKS_PER_DAY               24 * 60 * 60 / DIFFICULTY_TARGET
-#define DIFFICULTY_WINDOW                               EXPECTED_NUMBER_OF_BLOCKS_PER_DAY
+#define DIFFICULTY_WINDOW                               17
 #define DIFFICULTY_WINDOW_V1                            DIFFICULTY_WINDOW
 #define DIFFICULTY_WINDOW_V2                            DIFFICULTY_WINDOW
 #define DIFFICULTY_WINDOW_V4                            DIFFICULTY_WINDOW
@@ -85,7 +85,7 @@ namespace parameters {
 #define KEY_IMAGE_CHECKING_BLOCK_INDEX                  0
 #define UPGRADE_HEIGHT_V2                               1
 #define UPGRADE_HEIGHT_V3                               2
-#define UPGRADE_HEIGHT_V4                               20000
+#define UPGRADE_HEIGHT_V4                               1000000
 
 #define UPGRADE_VOTING_THRESHOLD                        90
 #define UPGRADE_VOTING_WINDOW                           EXPECTED_NUMBER_OF_BLOCKS_PER_DAY
@@ -99,8 +99,8 @@ namespace parameters {
 
 } // parameters
 
-#define CRYPTONOTE_NAME                                 "marketcash"
-#define CRYPTONOTE_GENESIS_TX                           "010a01ff00018095f52a02dc8879a7169356c351c513143328412f17c9c7d3ed8e59d627382da2a192600d21016ad72945f846180439835116aab83d985988ddab75f6c6d341e5259cb3e153e0"
+#define CRYPTONOTE_NAME                                 "mkt"
+#define CRYPTONOTE_GENESIS_TX                           "010a01ff00019edda6a90d029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd0880712101a171ce204f05ef6157ef090820c36c4e685b2bd3d2142c6005141f2bbc92fe0c"
 
 #define TRANSACTION_VERSION_1                           1
 #define TRANSACTION_VERSION_2                           2
@@ -117,8 +117,8 @@ namespace parameters {
 #define BLOCKS_SYNCHRONIZING_DEFAULT_COUNT              300
 #define COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT           1000
 
-#define P2P_DEFAULT_PORT                                32366
-#define RPC_DEFAULT_PORT                                32367
+#define P2P_DEFAULT_PORT                                32266
+#define RPC_DEFAULT_PORT                                32267
 
 #define P2P_LOCAL_WHITE_PEERLIST_LIMIT                  1000
 #define P2P_LOCAL_GRAY_PEERLIST_LIMIT                   5000
@@ -133,16 +133,16 @@ namespace parameters {
 #define P2P_DEFAULT_PING_CONNECTION_TIMEOUT             2000
 #define P2P_DEFAULT_INVOKE_TIMEOUT                      60 * 2 * 1000
 #define P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT            5000
-#define P2P_STAT_TRUSTED_PUB_KEY                        "hucruv6c3jev6cecesa6waqakuzestacfee9c918ce505efe225d8c94d045fa115"
+#define P2P_STAT_TRUSTED_PUB_KEY                        ""
 
 const std::initializer_list<const char*> SEED_NODES {
-   "66.70.149.80:32366",
-   "158.69.175.16:32366",
-   "173.212.226.144:32366",
-   "35.226.167.162:32366",
-   "158.69.175.17:32366",
-   "52.67.140.70:32366",
-   "5.189.158.241:32366"
+   "66.70.149.80:32266",
+   "158.69.175.16:32266",
+   "173.212.226.144:32266",
+   "35.226.167.162:32266",
+   "158.69.175.17:32266",
+   "52.67.140.70:32266",
+   "5.189.158.241:32266"
   
 };
 
@@ -157,6 +157,7 @@ __attribute__((unused))
 
 const std::initializer_list<CheckpointData> CHECKPOINTS {
 
+	
 };
 
 } // CryptoNote
