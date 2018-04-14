@@ -450,7 +450,8 @@ Difficulty Currency::nextDifficulty(uint8_t version, uint32_t blockIndex, std::v
   std::vector<Difficulty> cumulativeDifficulties) const {
 
 //diff testing code so cpu miners can advance chain.      
-//if (blockIndex >= 14806 && version == BLOCK_MAJOR_VERSION_3) {return 1000;}
+//printf("blockIndex:%lu\n",blockIndex);
+//if (blockIndex >= 20000 && blockIndex<=20005) {return 1000;}
 
 
 //New WHM based diff code
@@ -767,7 +768,7 @@ CurrencyBuilder::CurrencyBuilder(Logging::ILogger& log) : m_currency(log) {
   numberOfPeriodsToForgetTxDeletedFromPool(CRYPTONOTE_NUMBER_OF_PERIODS_TO_FORGET_TX_DELETED_FROM_POOL);
 
   // fusion transactions fix
-  fusionTxMaxSize(MAX_TRANSACTION_SIZE_LIMIT * 30 / 100);
+  fusionTxMaxSize(MAX_TRANSACTION_SIZE_LIMIT);
   fusionTxMinInputCount(FUSION_TX_MIN_INPUT_COUNT);
   fusionTxMinInOutCountRatio(FUSION_TX_MIN_IN_OUT_COUNT_RATIO);
 

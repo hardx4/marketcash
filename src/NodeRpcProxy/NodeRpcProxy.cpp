@@ -363,6 +363,7 @@ std::error_code NodeRpcProxy::doGetBlockHashesByTimestamps(uint64_t timestampBeg
   COMMAND_RPC_GET_BLOCKS_HASHES_BY_TIMESTAMPS::request req = AUTO_VAL_INIT(req);
   COMMAND_RPC_GET_BLOCKS_HASHES_BY_TIMESTAMPS::response rsp = AUTO_VAL_INIT(rsp);
 
+//printf("NodeRpcProxy::doGetBlockHashesByTimestamps(\n");
   req.timestampBegin = timestampBegin;
   req.secondsCount = secondsCount;
 
@@ -571,6 +572,7 @@ std::error_code NodeRpcProxy::doQueryBlocksLite(const std::vector<Crypto::Hash>&
 
   req.blockIds = knownBlockIds;
   req.timestamp = timestamp;
+//printf("In  NodeRpcProxy::doQueryBlocksLite\n");
 
   m_logger(TRACE) << "Send queryblockslite.bin request, timestamp " << req.timestamp;
   std::error_code ec = binaryCommand("/queryblockslite.bin", req, rsp);
@@ -586,6 +588,7 @@ std::error_code NodeRpcProxy::doQueryBlocksLite(const std::vector<Crypto::Hash>&
     BlockShortEntry bse;
     bse.hasBlock = false;
 
+// m_logger(INFO) << "In  NodeRpcProxy::doQueryBlocksLite for loop. Block ID:" <<Common::podToHex(item.blockId);
     bse.blockHash = std::move(item.blockId);
     if (!item.block.empty()) {
       if (!fromBinaryArray(bse.block, item.block)) {
@@ -615,6 +618,7 @@ std::error_code NodeRpcProxy::doGetPoolSymmetricDifference(std::vector<Crypto::H
 
   req.tailBlockId = knownBlockId;
   req.knownTxsIds = knownPoolTxIds;
+//printf("NodeRpcProxy::doGetPoolSymmetricDifference(\n");
 
   m_logger(TRACE) << "Send get_pool_changes_lite.bin request, tailBlockId " << req.tailBlockId;
   std::error_code ec = binaryCommand("/get_pool_changes_lite.bin", req, rsp);

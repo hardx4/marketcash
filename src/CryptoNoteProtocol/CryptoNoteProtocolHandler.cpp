@@ -539,6 +539,7 @@ bool CryptoNoteProtocolHandler::request_missing_objects(CryptoNoteConnectionCont
       }
       it = context.m_needed_objects.erase(it);
     }
+//printf("CryptoNoteProtocolHandler::request_missing_objects. Count:%lu  context.m_remote_blockchain_height:%lu\n", count,context.m_remote_blockchain_height );
     logger(Logging::TRACE) << context << "-->>NOTIFY_REQUEST_GET_OBJECTS: blocks.size()=" << req.blocks.size() << ", txs.size()=" << req.txs.size();
     post_notify<NOTIFY_REQUEST_GET_OBJECTS>(*m_p2p, req, context);
   } else if (context.m_last_response_height < context.m_remote_blockchain_height - 1) {//we have to fetch more objects ids, request blockchain entry
@@ -562,6 +563,7 @@ bool CryptoNoteProtocolHandler::request_missing_objects(CryptoNoteConnectionCont
       return false;
     }
 
+//printf("CryptoNoteProtocolHandler::request_missing_objects pool tx\n");
     requestMissingPoolTransactions(context);
 
     context.m_state = CryptoNoteConnectionContext::state_normal;
@@ -577,7 +579,7 @@ bool CryptoNoteProtocolHandler::on_connection_synchronized() {
     logger(Logging::INFO) << ENDL << "**********************************************************************" << ENDL
       << "You are now synchronized with the network. You may now start simplewallet." << ENDL
       << ENDL
-      << "Please note, that the blockchain will be saved only after you quit the daemon with \"exit\" command or if you use \"save\" command." << ENDL
+      << "Please note, that the blockchain will be saved only after you quit the daemon with \"exit\" command." << ENDL
       << "Otherwise, you will possibly need to synchronize the blockchain again." << ENDL
       << ENDL
       << "Use \"help\" command to see the list of available commands." << ENDL
