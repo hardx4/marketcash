@@ -23,7 +23,7 @@ namespace parameters {
 #define CRYPTONOTE_MAX_TX_SIZE                          1000000000
 #define CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX         124 // starts with "M"
 #define CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW            10
-#define CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT              60 * 60 * 2
+#define CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT              360
 
 #define BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW               60
 
@@ -52,7 +52,7 @@ namespace parameters {
 #define DEFAULT_FEE                                     (uint64_t)pow(10, CRYPTONOTE_MONEY_DECIMAL_POINT / 2)
 #define DEFAULT_DUST_THRESHOLD                          MINIMUM_FEE
 
-#define MAX_TRANSACTION_SIZE_LIMIT                      61440 
+#define MAX_TRANSACTION_SIZE_LIMIT                      128000 
 #define MEMPOOL_POLLING_INTERVAL                        60 // how often to clean mempool
 
 #define DIFFICULTY_TARGET                               90
@@ -61,6 +61,7 @@ namespace parameters {
 #define DIFFICULTY_WINDOW_V1                            DIFFICULTY_WINDOW
 #define DIFFICULTY_WINDOW_V2                            DIFFICULTY_WINDOW
 #define DIFFICULTY_WINDOW_V4                            DIFFICULTY_WINDOW
+#define DIFFICULTY_WINDOW_V5                            90
 #define DIFFICULTY_CUT                                  0
 #define DIFFICULTY_CUT_V1                               DIFFICULTY_CUT
 #define DIFFICULTY_CUT_V2                               DIFFICULTY_CUT
@@ -68,6 +69,7 @@ namespace parameters {
 #define DIFFICULTY_LAG_V1                               DIFFICULTY_LAG
 #define DIFFICULTY_LAG_V2                               DIFFICULTY_LAG
 
+#define MKT                                             0x60000
 #define MAX_BLOCK_SIZE_INITIAL                          100 * 1024
 #define MAX_BLOCK_SIZE_GROWTH_SPEED_NUMERATOR           100 * 1024
 #define MAX_BLOCK_SIZE_GROWTH_SPEED_DENOMINATOR         365 * 24 * 60 * 60 / DIFFICULTY_TARGET
@@ -86,7 +88,8 @@ namespace parameters {
 #define KEY_IMAGE_CHECKING_BLOCK_INDEX                  0
 #define UPGRADE_HEIGHT_V2                               1
 #define UPGRADE_HEIGHT_V3                               2
-#define UPGRADE_HEIGHT_V4                               1000000
+#define UPGRADE_HEIGHT_V4                               64600
+#define UPGRADE_HEIGHT_V5                               64700
 
 #define UPGRADE_VOTING_THRESHOLD                        90
 #define UPGRADE_VOTING_WINDOW                           EXPECTED_NUMBER_OF_BLOCKS_PER_DAY
@@ -103,6 +106,7 @@ namespace parameters {
 #define CRYPTONOTE_NAME                                 "mkt"
 #define CRYPTONOTE_GENESIS_TX                           "010a01ff00019edda6a90d029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd0880712101a171ce204f05ef6157ef090820c36c4e685b2bd3d2142c6005141f2bbc92fe0c"
 
+
 #define TRANSACTION_VERSION_1                           1
 #define TRANSACTION_VERSION_2                           2
 #define CURRENT_TRANSACTION_VERSION                     TRANSACTION_VERSION_1
@@ -110,12 +114,13 @@ namespace parameters {
 #define BLOCK_MAJOR_VERSION_2                           2
 #define BLOCK_MAJOR_VERSION_3                           3
 #define BLOCK_MAJOR_VERSION_4                           4
+#define BLOCK_MAJOR_VERSION_5                           5
 
 #define BLOCK_MINOR_VERSION_0                           0
 #define BLOCK_MINOR_VERSION_1                           1
 
 #define BLOCKS_IDS_SYNCHRONIZING_DEFAULT_COUNT          20000
-#define BLOCKS_SYNCHRONIZING_DEFAULT_COUNT              2000
+#define BLOCKS_SYNCHRONIZING_DEFAULT_COUNT              4000
 #define COMMAND_RPC_GET_BLOCKS_FAST_MAX_COUNT           1000
 
 #define P2P_DEFAULT_PORT                                32266
@@ -134,7 +139,7 @@ namespace parameters {
 #define P2P_DEFAULT_PING_CONNECTION_TIMEOUT             2000
 #define P2P_DEFAULT_INVOKE_TIMEOUT                      60 * 2 * 1000
 #define P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT            5000
-#define P2P_STAT_TRUSTED_PUB_KEY                        ""
+
 
 const std::initializer_list<const char*> SEED_NODES {
    "66.70.149.80:32266",
@@ -162,5 +167,3 @@ const std::initializer_list<CheckpointData> CHECKPOINTS {
 };
 
 } // CryptoNote
-
-#define ALLOW_DEBUG_COMMANDS
