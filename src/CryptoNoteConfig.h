@@ -142,6 +142,7 @@ namespace parameters {
 
 
 const std::initializer_list<const char*> SEED_NODES {
+   "173.249.39.84:32266",
    "158.69.175.19:32266",
    "173.212.226.144:32266",
    "35.226.167.162:32266",
