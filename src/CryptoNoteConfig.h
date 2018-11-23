@@ -88,8 +88,9 @@ namespace parameters {
 #define KEY_IMAGE_CHECKING_BLOCK_INDEX                  0
 #define UPGRADE_HEIGHT_V2                               1
 #define UPGRADE_HEIGHT_V3                               2
-#define UPGRADE_HEIGHT_V4                               64600
-#define UPGRADE_HEIGHT_V5                               64700
+#define UPGRADE_HEIGHT_V4                               10
+#define UPGRADE_HEIGHT_V5                               15
+#define UPGRADE_HEIGHT_V6                               30
 
 #define UPGRADE_VOTING_THRESHOLD                        90
 #define UPGRADE_VOTING_WINDOW                           EXPECTED_NUMBER_OF_BLOCKS_PER_DAY
