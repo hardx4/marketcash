@@ -116,6 +116,7 @@ namespace parameters {
 #define BLOCK_MAJOR_VERSION_3                           3
 #define BLOCK_MAJOR_VERSION_4                           4
 #define BLOCK_MAJOR_VERSION_5                           5
+#define BLOCK_MAJOR_VERSION_6                           6
 
 #define BLOCK_MINOR_VERSION_0                           0
 #define BLOCK_MINOR_VERSION_1                           1
