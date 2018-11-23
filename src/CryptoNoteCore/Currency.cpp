@@ -465,7 +465,7 @@ Difficulty Currency::nextDifficulty(uint8_t version, uint32_t blockIndex, std::v
 //if (blockIndex >= 39400 && blockIndex < (UPGRADE_HEIGHT_V5-1)) {return 1500;}
 
 // easy diff for transition
-if (blockIndex >= (UPGRADE_HEIGHT_V5-1) && blockIndex <= (UPGRADE_HEIGHT_V5+100) ) {return 4000000;}
+//if (blockIndex >= (UPGRADE_HEIGHT_V5-1) && blockIndex <= (UPGRADE_HEIGHT_V5+100) ) {return 4000000;}
 
 //new MarketCash diff code
   if (version == BLOCK_MAJOR_VERSION_5 ) {
