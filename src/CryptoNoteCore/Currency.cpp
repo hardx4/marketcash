@@ -839,6 +839,7 @@ CurrencyBuilder::CurrencyBuilder(Logging::ILogger& log) : m_currency(log) {
   upgradeHeightV3(UPGRADE_HEIGHT_V3);
   upgradeHeightV4(UPGRADE_HEIGHT_V4);
   upgradeHeightV5(UPGRADE_HEIGHT_V5);
+  upgradeHeightV6(UPGRADE_HEIGHT_V6);
 
   upgradeVotingThreshold(UPGRADE_VOTING_THRESHOLD);
   upgradeVotingWindow(UPGRADE_VOTING_WINDOW);
