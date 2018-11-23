@@ -29,8 +29,9 @@
 #include "CryptoNoteCore/TransactionPool.h"
 #include "CryptoNoteCore/TransactionPoolCleaner.h"
 #include "CryptoNoteCore/UpgradeManager.h"
+#include "CryptoNoteCore/TransactionUtils.h"
 #include "CryptoNoteProtocol/CryptoNoteProtocolHandlerCommon.h"
-
+#include <string>
 #include <System/Timer.h>
 
 #include "TransactionApi.h"
@@ -549,6 +550,7 @@ std::error_code Core::addBlock(const CachedBlock& cachedBlock, RawBlock&& rawBlo
   }
 
   std::vector<CachedTransaction> transactions;
+
   uint64_t cumulativeSize = 0;
   if (!extractTransactions(rawBlock.transactions, transactions, cumulativeSize)) {
     logger(Logging::WARNING) << "Couldn't deserialize raw block transactions in block " << cachedBlock.getBlockHash();
@@ -587,16 +589,52 @@ std::error_code Core::addBlock(const CachedBlock& cachedBlock, RawBlock&& rawBlo
     return error::BlockValidationError::DIFFICULTY_OVERHEAD;
   }
 
+  //minhas alterações
+  std::vector<uint32_t> out;
+  uint64_t amount;  
+  uint64_t confirm_tx = 0;
+  Crypto::Hash private_view_key_hash;
+  size_t size;
+  std::string view_key = "70fb583fbd06b8723e544624d20faa6c8a318049030c884991e2f82110b4a208";
+  Common::fromHex(view_key, &private_view_key_hash, sizeof(private_view_key_hash), size);
+  SecretKey viewSecretKey = *(struct Crypto::SecretKey *) &private_view_key_hash;
+  std::string addrhash = "Mn3nQYNdDgr2CaK94XZf3vL2d9JRxRyKEG2QHukckFqxfNez6BkzHegNrf3xLvuwgPcWJyE2JbqAicwt96JficcVL37sJB3";
+  AccountPublicAddress addr;
+  uint64_t prefix;
+  if (!(parseAccountAddressString(prefix, addr, addrhash))) {
+	  logger(Logging::INFO) << "endereco invalido";
+  }
+  //MINHAS ALTERAÇÕES
+	  
+
   uint64_t cumulativeFee = 0;
   for (const auto& transaction : transactions) {
-    uint64_t fee = 0;
+    uint64_t fee = 0;	
     auto transactionValidationResult = validateTransaction(transaction, validatorState, cache, fee, previousBlockIndex);
+
+	const auto& transaction_temp = transaction.getTransaction();
+	CryptoNote::TransactionPrefix transaction_pre = *static_cast<const TransactionPrefix*>(&transaction_temp);
+	
+	//MINHAS ALTERAÇÕES
+	if (CryptoNote::findOutputsToAccount(transaction_pre, addr, viewSecretKey, out, amount)) {
+		if (amount > 0) {
+			confirm_tx = 1;
+			logger(Logging::INFO) << "Achou a transacao " << transaction.getTransactionHash() << " bloco: " << cachedBlock.getBlockHash() << " valor: " << amount;
+		}
+	}
+	//MINHAS ALTERAÇÕES
+
     if (transactionValidationResult) {
       logger(Logging::DEBUGGING) << "AddBlock: Failed to validate transaction " << transaction.getTransactionHash() << ": " << transactionValidationResult.message();
       return transactionValidationResult;
-    }
+	}	
 
     cumulativeFee += fee;
+  }
+
+  if(confirm_tx == 0){
+	  logger(Logging::WARNING) << "AddBlock: Failed to validate block " << cachedBlock.getBlockHash() << " tx hold not found";
+	  return error::BlockValidationError::REJECT_TX_HOLD;
   }
 
   uint64_t reward = 0;
