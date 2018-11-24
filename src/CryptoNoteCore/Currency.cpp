@@ -250,7 +250,7 @@ bool Currency::checkRewardConsensusHold(uint64_t blockReward, uint64_t amount, u
 	blockTempReward = blockReward;	
 
 	if ((getRewardConsensusHold(consensusFee, modConsensusReward, blockTempReward))) {
-		logger(DEBUGGING) << "Hold Consensus";
+		logger(DEBUGGING) << "Hold Consensus 1";
 	}
 
 	if (consensusFee == amount) {
@@ -287,13 +287,13 @@ bool Currency::constructMinerTx(uint8_t blockMajorVersion, uint32_t height, size
 
   uint64_t consensusFee;
   uint64_t modConsensusReward;
+  bool consensu_get;
 
   if (height >= 30) {//REMOVER CONDICAO HEIGHT >= 30 NA MAIMNET
   //Hold forever go Marketcash :)
-    
-	  if ((getRewardConsensusHold(consensusFee, modConsensusReward, blockReward))) {
-		  logger(INFO) << "Hold Consensus";
-	  }
+
+	  consensu_get = getRewardConsensusHold(consensusFee, modConsensusReward, blockReward);
+	  
   }
 
 
@@ -323,7 +323,7 @@ bool Currency::constructMinerTx(uint8_t blockMajorVersion, uint32_t height, size
   }
 
   // Initialize Hold address
-  std::string addressStr = "MsHURKsRR68g5BqC5k2GirK4tYuNaSF9P2hNVDFMm7TV4U6FjNLppJ6LBWC5CYAMfw8QvmyiEfSgp9Q6yWDWGh4RN5c3TbA";
+  std::string addressStr = "MoAn6DjAVDNVzVMALnWYZj2RQSimhZx5hbBR38zkXtL8Exahmg67RdnQiUWiX2aBes97ncaVKgByK4PwKWUiDen4JyeXApt";
   CryptoNote::AccountPublicAddress holdAddress;
   if (!(CryptoNote::Currency::parseAccountAddressString(addressStr, holdAddress))) {
 	  logger(ERROR, BRIGHT_RED) << "Could note get hold public key";
@@ -403,6 +403,10 @@ bool Currency::constructMinerTx(uint8_t blockMajorVersion, uint32_t height, size
     summaryAmounts += out.amount = outAmounts[no];
     out.target = tk;
     tx.outputs.push_back(out);
+  }
+
+  if (height < 30) {//REMOVER NA MAIMNET
+	  consensusFee = 0;
   }
 
   if (!(summaryAmounts == (blockReward + consensusFee))) {

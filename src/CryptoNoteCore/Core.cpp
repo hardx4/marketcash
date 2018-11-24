@@ -572,6 +572,7 @@ std::error_code Core::addBlock(const CachedBlock& cachedBlock, RawBlock&& rawBlo
   }
 
   uint64_t minerReward = 0;
+  
   auto blockValidationResult = validateBlock(cachedBlock, cache, minerReward);
   if (blockValidationResult) {
     logger(Logging::WARNING) << "AddBlock: Failed to validate block " << cachedBlock.getBlockHash() << ": " << blockValidationResult.message();
@@ -595,35 +596,41 @@ std::error_code Core::addBlock(const CachedBlock& cachedBlock, RawBlock&& rawBlo
   uint64_t confirm_tx = 0;
   Crypto::Hash private_view_key_hash;
   size_t size;
-  std::string view_key = "792c8260d132e87e0760a0f39fbdf6cd7af950f3d86b546ff4b6949674aedb0b";
+  std::string view_key = "d641065bee2e7516e560bbff5ee95eff7c5eb85b3ebe64dcdd08068bb1168008";
   Common::fromHex(view_key, &private_view_key_hash, sizeof(private_view_key_hash), size);
   SecretKey viewSecretKey = *(struct Crypto::SecretKey *) &private_view_key_hash;
-  std::string addrhash = "MsHURKsRR68g5BqC5k2GirK4tYuNaSF9P2hNVDFMm7TV4U6FjNLppJ6LBWC5CYAMfw8QvmyiEfSgp9Q6yWDWGh4RN5c3TbA";
+  std::string addrhash = "MoAn6DjAVDNVzVMALnWYZj2RQSimhZx5hbBR38zkXtL8Exahmg67RdnQiUWiX2aBes97ncaVKgByK4PwKWUiDen4JyeXApt";
   AccountPublicAddress addr;
   uint64_t prefix;
   if (!(parseAccountAddressString(prefix, addr, addrhash))) {
 	  logger(Logging::INFO) << "endereco invalido";
   }
   //MINHAS ALTERAÇÕES
+
+
+  const auto& block = cachedBlock.getBlock();
+
+  const auto& transaction_temp = block.baseTransaction;
+  
+  CryptoNote::TransactionPrefix transaction_pre = *static_cast<const TransactionPrefix*>(&transaction_temp);
+
+
+  //MINHAS ALTERAÇÕES
+  if ((CryptoNote::findOutputsToAccount(transaction_pre, addr, viewSecretKey, out, amount))) {
+	  if (amount > 0) {
+		  confirm_tx = 1;
+		  logger(Logging::INFO) << "Achou a transacao " << getObjectHash(block.baseTransaction) << " bloco: " << cachedBlock.getBlockHash() << " valor: " << amount << " Altura: " << (previousBlockIndex + 1);
+	  }
+  }
+  //MINHAS ALTERAÇÕES
 	  
-  //calcula 
+  //calcula
 
   uint64_t cumulativeFee = 0;
   for (const auto& transaction : transactions) {
     uint64_t fee = 0;	
     auto transactionValidationResult = validateTransaction(transaction, validatorState, cache, fee, previousBlockIndex);
-
-	const auto& transaction_temp = transaction.getTransaction();
-	CryptoNote::TransactionPrefix transaction_pre = *static_cast<const TransactionPrefix*>(&transaction_temp);
 	
-	//MINHAS ALTERAÇÕES
-	if (CryptoNote::findOutputsToAccount(transaction_pre, addr, viewSecretKey, out, amount)) {
-		if (amount > 0) {
-			confirm_tx = 1;
-			logger(Logging::INFO) << "Achou a transacao " << transaction.getTransactionHash() << " bloco: " << cachedBlock.getBlockHash() << " valor: " << amount;
-		}
-	}
-	//MINHAS ALTERAÇÕES
 
     if (transactionValidationResult) {
       logger(Logging::DEBUGGING) << "AddBlock: Failed to validate transaction " << transaction.getTransactionHash() << ": " << transactionValidationResult.message();
@@ -632,6 +639,11 @@ std::error_code Core::addBlock(const CachedBlock& cachedBlock, RawBlock&& rawBlo
 
     cumulativeFee += fee;
   }
+
+  //for (const auto& transaction1 : rawBlock.transactions) {
+     
+  //}
+  
 
   uint64_t reward = 0;
   int64_t emissionChange = 0;
@@ -663,11 +675,10 @@ std::error_code Core::addBlock(const CachedBlock& cachedBlock, RawBlock&& rawBlo
 
   auto ret = error::AddBlockErrorCode::ADDED_TO_ALTERNATIVE;
 
-  if ((previousBlockIndex + 1) >= 30) {
+  if ((previousBlockIndex + 1) >= 61) {
 	  //calculo da coinbase para a tx do hold
 	  //Hold forever go Marketcash :)
-	  uint64_t consensusFee;
-	  uint64_t modConsensusReward;
+
 	  uint64_t blockTempReward;
 
 	  if (confirm_tx == 0) {
