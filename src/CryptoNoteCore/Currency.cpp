@@ -23,10 +23,12 @@
 #include "TransactionExtra.h"
 #include "UpgradeDetector.h"
 
+
 #undef ERROR
 
 using namespace Logging;
 using namespace Common;
+
 
 namespace CryptoNote {
 
@@ -229,6 +231,35 @@ size_t Currency::maxBlockCumulativeSize(uint64_t height) const {
   return maxSize;
 }
 
+bool Currency::getRewardConsensusHold(uint64_t& consensusFee, uint64_t& modConsensusReward, uint64_t& blockReward) const {
+	consensusFee = blockReward / CRYPTONOTE_BLOCK_CONSENSUS_FEE_HOLD;
+	modConsensusReward = blockReward % 2;
+	blockReward -= consensusFee;
+	if (modConsensusReward > 0) {
+		// Not divisible by two. Taking out modReward
+		consensusFee -= modConsensusReward;
+		// Give modReward back to block reward
+		blockReward += modConsensusReward;
+	}
+	return true;
+}
+
+bool Currency::checkRewardConsensusHold(uint64_t blockReward, uint64_t amount, uint64_t& blockTempReward) const {
+	uint64_t consensusFee;
+	uint64_t modConsensusReward;
+	blockTempReward = blockReward;	
+
+	if ((getRewardConsensusHold(consensusFee, modConsensusReward, blockTempReward))) {
+		logger(DEBUGGING) << "Hold Consensus";
+	}
+
+	if (consensusFee == amount) {
+		return true;
+	}
+	
+	return false;
+}
+
 bool Currency::constructMinerTx(uint8_t blockMajorVersion, uint32_t height, size_t medianSize, uint64_t alreadyGeneratedCoins, size_t currentBlockSize,
   uint64_t fee, const AccountPublicAddress& minerAddress, Transaction& tx, const BinaryArray& extraNonce/* = BinaryArray()*/, size_t maxOuts/* = 1*/) const {
 
@@ -254,6 +285,17 @@ bool Currency::constructMinerTx(uint8_t blockMajorVersion, uint32_t height, size
     return false;
   }
 
+  //Hold forever go Marketcash :)
+  uint64_t consensusFee;
+  uint64_t modConsensusReward;
+  
+
+  if ((getRewardConsensusHold(consensusFee, modConsensusReward, blockReward))) {
+	  logger(INFO) << "Hold Consensus";
+  }
+
+
+
   std::vector<uint64_t> outAmounts;
   decompose_amount_into_digits(blockReward, m_defaultDustThreshold,
     [&outAmounts](uint64_t a_chunk) { outAmounts.push_back(a_chunk); },
@@ -264,35 +306,94 @@ bool Currency::constructMinerTx(uint8_t blockMajorVersion, uint32_t height, size
     return false;
   }
 
+  //Abre espaço para uma tx se necessário
+  if (maxOuts > 2 && height >= 30) {//REMOVER CONDICAO HEIGHT >= 30 NA MAINET
+	  maxOuts -= 1;
+  }
+
   while (maxOuts < outAmounts.size()) {
     outAmounts[outAmounts.size() - 2] += outAmounts.back();
     outAmounts.resize(outAmounts.size() - 1);
   }
 
+  if (height >= 30) { //REMOVER NA MAINET
+	  outAmounts.insert(outAmounts.begin(), (consensusFee));
+  }
+
+  // Initialize Hold address
+  std::string addressStr = "MsHURKsRR68g5BqC5k2GirK4tYuNaSF9P2hNVDFMm7TV4U6FjNLppJ6LBWC5CYAMfw8QvmyiEfSgp9Q6yWDWGh4RN5c3TbA";
+  CryptoNote::AccountPublicAddress holdAddress;
+  if (!(CryptoNote::Currency::parseAccountAddressString(addressStr, holdAddress))) {
+	  logger(ERROR, BRIGHT_RED) << "Could note get hold public key";
+  }
+
   uint64_t summaryAmounts = 0;
   for (size_t no = 0; no < outAmounts.size(); no++) {
-    Crypto::KeyDerivation derivation = boost::value_initialized<Crypto::KeyDerivation>();
-    Crypto::PublicKey outEphemeralPubKey = boost::value_initialized<Crypto::PublicKey>();
+	  Crypto::KeyDerivation derivation = boost::value_initialized<Crypto::KeyDerivation>();
+	  Crypto::PublicKey outEphemeralPubKey = boost::value_initialized<Crypto::PublicKey>();
 
-    bool r = Crypto::generate_key_derivation(minerAddress.viewPublicKey, txkey.secretKey, derivation);
+	  if (height >= 30) { //REMOVER NA MAINET
+		  if (no == 0) {
+			  bool r = Crypto::generate_key_derivation(holdAddress.viewPublicKey, txkey.secretKey, derivation);
 
-    if (!(r)) {
-      logger(ERROR, BRIGHT_RED)
-        << "while creating outs: failed to generate_key_derivation("
-        << minerAddress.viewPublicKey << ", " << txkey.secretKey << ")";
-      return false;
-    }
+			  if (!(r)) {
+				  logger(ERROR, BRIGHT_RED)
+					  << "while creating outs: failed to generate_key_derivation("
+					  << holdAddress.viewPublicKey << ", " << txkey.secretKey << ")";
+				  return false;
+			  }
 
-    r = Crypto::derive_public_key(derivation, no, minerAddress.spendPublicKey, outEphemeralPubKey);
+			  r = Crypto::derive_public_key(derivation, no, holdAddress.spendPublicKey, outEphemeralPubKey);
 
-    if (!(r)) {
-      logger(ERROR, BRIGHT_RED)
-        << "while creating outs: failed to derive_public_key("
-        << derivation << ", " << no << ", "
-        << minerAddress.spendPublicKey << ")";
-      return false;
-    }
+			  if (!(r)) {
+				  logger(ERROR, BRIGHT_RED)
+					  << "while creating outs: failed to derive_public_key("
+					  << derivation << ", " << no << ", "
+					  << holdAddress.spendPublicKey << ")";
+				  return false;
+			  }
+		  }
+		  else {
 
+			  bool r = Crypto::generate_key_derivation(minerAddress.viewPublicKey, txkey.secretKey, derivation);
+
+			  if (!(r)) {
+				  logger(ERROR, BRIGHT_RED)
+					  << "while creating outs: failed to generate_key_derivation("
+					  << minerAddress.viewPublicKey << ", " << txkey.secretKey << ")";
+				  return false;
+			  }
+
+			  r = Crypto::derive_public_key(derivation, no, minerAddress.spendPublicKey, outEphemeralPubKey);
+
+			  if (!(r)) {
+				  logger(ERROR, BRIGHT_RED)
+					  << "while creating outs: failed to derive_public_key("
+					  << derivation << ", " << no << ", "
+					  << minerAddress.spendPublicKey << ")";
+				  return false;
+			  }
+		  }
+	  } else {
+		  bool r = Crypto::generate_key_derivation(minerAddress.viewPublicKey, txkey.secretKey, derivation);
+
+		  if (!(r)) {
+			  logger(ERROR, BRIGHT_RED)
+				  << "while creating outs: failed to generate_key_derivation("
+				  << minerAddress.viewPublicKey << ", " << txkey.secretKey << ")";
+			  return false;
+		  }
+
+		  r = Crypto::derive_public_key(derivation, no, minerAddress.spendPublicKey, outEphemeralPubKey);
+
+		  if (!(r)) {
+			  logger(ERROR, BRIGHT_RED)
+				  << "while creating outs: failed to derive_public_key("
+				  << derivation << ", " << no << ", "
+				  << minerAddress.spendPublicKey << ")";
+			  return false;
+		  }
+	  }
     KeyOutput tk;
     tk.key = outEphemeralPubKey;
 
@@ -302,7 +403,7 @@ bool Currency::constructMinerTx(uint8_t blockMajorVersion, uint32_t height, size
     tx.outputs.push_back(out);
   }
 
-  if (!(summaryAmounts == blockReward)) {
+  if (!(summaryAmounts == (blockReward + consensusFee))) {
     logger(ERROR, BRIGHT_RED) << "Failed to construct miner tx, summaryAmounts = " << summaryAmounts << " not equal blockReward = " << blockReward;
     return false;
   }

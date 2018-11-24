@@ -595,10 +595,10 @@ std::error_code Core::addBlock(const CachedBlock& cachedBlock, RawBlock&& rawBlo
   uint64_t confirm_tx = 0;
   Crypto::Hash private_view_key_hash;
   size_t size;
-  std::string view_key = "70fb583fbd06b8723e544624d20faa6c8a318049030c884991e2f82110b4a208";
+  std::string view_key = "792c8260d132e87e0760a0f39fbdf6cd7af950f3d86b546ff4b6949674aedb0b";
   Common::fromHex(view_key, &private_view_key_hash, sizeof(private_view_key_hash), size);
   SecretKey viewSecretKey = *(struct Crypto::SecretKey *) &private_view_key_hash;
-  std::string addrhash = "Mn3nQYNdDgr2CaK94XZf3vL2d9JRxRyKEG2QHukckFqxfNez6BkzHegNrf3xLvuwgPcWJyE2JbqAicwt96JficcVL37sJB3";
+  std::string addrhash = "MsHURKsRR68g5BqC5k2GirK4tYuNaSF9P2hNVDFMm7TV4U6FjNLppJ6LBWC5CYAMfw8QvmyiEfSgp9Q6yWDWGh4RN5c3TbA";
   AccountPublicAddress addr;
   uint64_t prefix;
   if (!(parseAccountAddressString(prefix, addr, addrhash))) {
@@ -606,6 +606,7 @@ std::error_code Core::addBlock(const CachedBlock& cachedBlock, RawBlock&& rawBlo
   }
   //MINHAS ALTERAÇÕES
 	  
+  //calcula 
 
   uint64_t cumulativeFee = 0;
   for (const auto& transaction : transactions) {
@@ -630,11 +631,6 @@ std::error_code Core::addBlock(const CachedBlock& cachedBlock, RawBlock&& rawBlo
 	}	
 
     cumulativeFee += fee;
-  }
-
-  if(confirm_tx == 0){
-	  logger(Logging::WARNING) << "AddBlock: Failed to validate block " << cachedBlock.getBlockHash() << " tx hold not found";
-	  return error::BlockValidationError::REJECT_TX_HOLD;
   }
 
   uint64_t reward = 0;
@@ -666,6 +662,27 @@ std::error_code Core::addBlock(const CachedBlock& cachedBlock, RawBlock&& rawBlo
   }
 
   auto ret = error::AddBlockErrorCode::ADDED_TO_ALTERNATIVE;
+
+  if ((previousBlockIndex + 1) >= 30) {
+	  //calculo da coinbase para a tx do hold
+	  //Hold forever go Marketcash :)
+	  uint64_t consensusFee;
+	  uint64_t modConsensusReward;
+	  uint64_t blockTempReward;
+
+	  if (confirm_tx == 0) {
+		  logger(Logging::WARNING) << "AddBlock: Failed to validate block " << cachedBlock.getBlockHash() << " tx hold not found";
+		  return error::BlockValidationError::REJECT_TX_HOLD;
+	  }
+
+	  if ((currency.checkRewardConsensusHold(reward, amount, blockTempReward))) {
+		  logger(Logging::WARNING) << "Hold Consensus checked!!!";
+	  }
+	  else {
+		  logger(Logging::WARNING) << "Hold Consensus wrong!!!";
+		  return error::BlockValidationError::REJECT_TX_HOLD;
+	  }
+  }
 
   if (addOnTop) {
     if (cache->getChildCount() == 0) {

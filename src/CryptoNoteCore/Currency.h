@@ -109,6 +109,9 @@ public:
 
   size_t maxBlockCumulativeSize(uint64_t height) const;
 
+  bool getRewardConsensusHold(uint64_t& consensusFee, uint64_t& modConsensusReward, uint64_t& blockReward) const;
+  bool checkRewardConsensusHold(uint64_t blockReward, uint64_t amount, uint64_t& blockTempReward) const;
+
   bool constructMinerTx(uint8_t blockMajorVersion, uint32_t height, size_t medianSize, uint64_t alreadyGeneratedCoins, size_t currentBlockSize,
     uint64_t fee, const AccountPublicAddress& minerAddress, Transaction& tx, const BinaryArray& extraNonce = BinaryArray(), size_t maxOuts = 1) const;
 

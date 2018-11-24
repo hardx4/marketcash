@@ -24,6 +24,7 @@ namespace parameters {
 #define CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX         124 // starts with "M"
 #define CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW            10
 #define CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT              360
+#define CRYPTONOTE_BLOCK_CONSENSUS_FEE_HOLD             2 //50% for hold platform
 
 #define BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW               60
 
