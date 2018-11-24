@@ -285,12 +285,12 @@ bool Currency::constructMinerTx(uint8_t blockMajorVersion, uint32_t height, size
     return false;
   }
 
-  if (height >= 30) {//REMOVER CONDICAO HEIGHT >= 30 NA MAIMNET
-  //Hold forever go Marketcash :)
   uint64_t consensusFee;
   uint64_t modConsensusReward;
-  
-  
+
+  if (height >= 30) {//REMOVER CONDICAO HEIGHT >= 30 NA MAIMNET
+  //Hold forever go Marketcash :)
+    
 	  if ((getRewardConsensusHold(consensusFee, modConsensusReward, blockReward))) {
 		  logger(INFO) << "Hold Consensus";
 	  }
