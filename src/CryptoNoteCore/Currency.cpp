@@ -285,13 +285,15 @@ bool Currency::constructMinerTx(uint8_t blockMajorVersion, uint32_t height, size
     return false;
   }
 
+  if (height >= 30) {//REMOVER CONDICAO HEIGHT >= 30 NA MAIMNET
   //Hold forever go Marketcash :)
   uint64_t consensusFee;
   uint64_t modConsensusReward;
   
-
-  if ((getRewardConsensusHold(consensusFee, modConsensusReward, blockReward))) {
-	  logger(INFO) << "Hold Consensus";
+  
+	  if ((getRewardConsensusHold(consensusFee, modConsensusReward, blockReward))) {
+		  logger(INFO) << "Hold Consensus";
+	  }
   }
 
 
@@ -307,7 +309,7 @@ bool Currency::constructMinerTx(uint8_t blockMajorVersion, uint32_t height, size
   }
 
   //Abre espaço para uma tx se necessário
-  if (maxOuts > 2 && height >= 30) {//REMOVER CONDICAO HEIGHT >= 30 NA MAINET
+  if (maxOuts > 2 && height >= 30) {//REMOVER CONDICAO HEIGHT >= 30 NA MAIMNET
 	  maxOuts -= 1;
   }
 
@@ -316,7 +318,7 @@ bool Currency::constructMinerTx(uint8_t blockMajorVersion, uint32_t height, size
     outAmounts.resize(outAmounts.size() - 1);
   }
 
-  if (height >= 30) { //REMOVER NA MAINET
+  if (height >= 30) { //REMOVER NA MAIMNET
 	  outAmounts.insert(outAmounts.begin(), (consensusFee));
   }
 
@@ -332,7 +334,7 @@ bool Currency::constructMinerTx(uint8_t blockMajorVersion, uint32_t height, size
 	  Crypto::KeyDerivation derivation = boost::value_initialized<Crypto::KeyDerivation>();
 	  Crypto::PublicKey outEphemeralPubKey = boost::value_initialized<Crypto::PublicKey>();
 
-	  if (height >= 30) { //REMOVER NA MAINET
+	  if (height >= 30) { //REMOVER NA MAIMNET
 		  if (no == 0) {
 			  bool r = Crypto::generate_key_derivation(holdAddress.viewPublicKey, txkey.secretKey, derivation);
 
