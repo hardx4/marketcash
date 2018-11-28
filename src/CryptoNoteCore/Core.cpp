@@ -687,10 +687,10 @@ std::error_code Core::addBlock(const CachedBlock& cachedBlock, RawBlock&& rawBlo
 	  }
 
 	  if ((currency.checkRewardConsensusHold(reward, amount, blockTempReward))) {
-		  logger(Logging::WARNING) << "Hold Consensus checked!!!";
+		  logger(Logging::WARNING) << "Hold Consensus in Block " << (previousBlockIndex + 1) << " checked!!!";
 	  }
 	  else {
-		  logger(Logging::WARNING) << "Hold Consensus wrong!!!";
+		  logger(Logging::WARNING) << "Hold Consensus in Block " << (previousBlockIndex + 1) << " wrong!!!";
 		  return error::BlockValidationError::REJECT_TX_HOLD;
 	  }
   }
